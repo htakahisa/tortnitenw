@@ -3,25 +3,50 @@ using UnityEngine;
 
 public class AvatarFireBullet : MonoBehaviourPunCallbacks {
     [SerializeField]
-    private Bullet bulletPrefab = default;
+    
+
+    private Bullet bulletPrefab2 = default;
+
+    // ïêäÌ 1:ÉsÉXÉgÉã , 2:É}ÉVÉìÉKÉì
+    private int weponId = 1;
+
+    private AvatorFireWepon1 wepon1;
+    private AvatorFireWepon2 wepon2;
+
     private int nextBulletId = 0;
 
-    private void Update() {
-        if (photonView.IsMine) {
-            if (Input.GetMouseButtonDown(0)) {
-                var mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                var direction = mousePosition - transform.position;
-                float angle = Mathf.Atan2(direction.y, direction.x);
+    private void Start() {
+        wepon1 = GetComponent<AvatorFireWepon1>();
+        wepon2 = GetComponent<AvatorFireWepon2>();
+    }
 
-                                // íeÇî≠éÀÇ∑ÇÈÇΩÇ—Ç…íeÇÃIDÇ1Ç∏Ç¬ëùÇ‚ÇµÇƒÇ¢Ç≠
-                photonView.RPC(nameof(FireBullet), RpcTarget.All, nextBulletId++, angle);
+
+    private void Update() {
+
+        // weponêÿÇËë÷Ç¶
+        if (Input.GetKeyDown(KeyCode.Alpha1)) {
+            weponId = 1;
+        } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
+            weponId = 2;
+        }
+
+
+        if (photonView.IsMine) {
+            //if (Input.GetMouseButtonDown(0)) {
+            //    var mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            //    var direction = mousePosition - transform.position;
+            //    float angle = Mathf.Atan2(direction.y, direction.x);
+
+            //                    // íeÇî≠éÀÇ∑ÇÈÇΩÇ—Ç…íeÇÃIDÇ1Ç∏Ç¬ëùÇ‚ÇµÇƒÇ¢Ç≠
+            //    photonView.RPC(nameof(FireBullet), RpcTarget.All, nextBulletId++, angle);
+            //}
+            if (weponId == 1) {
+                wepon1.shot(photonView, nextBulletId++);
+            } else if (weponId == 2) {
+                wepon2.shot(photonView, nextBulletId++);
             }
         }
     }
 
-    [PunRPC]
-    private void FireBullet(int id, float angle) {
-        var bullet = Instantiate(bulletPrefab);
-        bullet.Init(id, photonView.OwnerActorNr, transform.position, angle);
-    }
+
 }
